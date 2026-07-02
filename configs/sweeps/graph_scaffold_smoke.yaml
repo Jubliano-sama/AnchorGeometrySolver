@@ -1,0 +1,36 @@
+benchmark:
+  name: graph_scaffold_smoke
+  seed: 2026070201
+  cases_per_bucket: 2
+  device: cpu
+
+runner:
+  backend: thread
+  workers: 4
+  fold_threshold_m: 1.65
+  output_dir: outputs
+
+layouts:
+  - name: random_16_32
+    bucket: random
+  - name: grid_16_plus
+    bucket: grid
+  - name: office_16_plus
+    bucket: office
+
+methods:
+  - name: production
+    solver: production
+    params:
+      seed_count: 4
+      iterations: 35
+  - name: graph_shortest
+    solver: graph_shortest
+    params:
+      seed_count: 4
+      iterations: 35
+      relative_sigma: 0.30
+    grid:
+      max_hops: [2, 3]
+      scaffold_weight: [1.0, 2.0]
+      hop_weight_base: [1.0, 1.4]
