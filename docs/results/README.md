@@ -29,3 +29,6 @@ belong in the ignored `outputs/` directory.
   `visibility_tuned_validation_worst_cases_all_methods_metrics.csv`: worst-case
   visualization and metrics for the selected methods, cross-solved on each
   method's hardest validation case.
+- `office_layout_families_ground_truth.png`: documentation diagram showing
+  representative ground-truth office layout families and their true 8 m
+  visibility graph.

@@ -59,6 +59,70 @@ Visibility-aware methods now available in configs:
 
 Set `constrained_polish: true` on `graph_shortest`, `visibility_branching`, `visibility_relaxed`, or `visibility_sdp` to use the optional final hinge solver. Missing edges use `max(0, radio_radius + margin - distance)` and graph-shortest bounds use `max(0, distance - upper_bound)`.
 
+## Generated Layouts
+
+The current office-layout validation bucket uses grid-like anchor placement in
+six shape families: corridor, L shape, T shape, U shape, hollow square, and
+rooms. The diagram below shows representative ground-truth layouts only; faint
+lines are true anchor pairs within the 8 m radio radius before range noise is
+added.
+
+![Office layout families](docs/results/office_layout_families_ground_truth.png)
+
+## Current Best Solver
+
+As of the checked-in `visibility_tuned_validation` run, the best overall
+non-ML solver is `visibility_branching_tuned`. On 90 fresh fair validation
+cases, 16-24 anchors with minimum vertex connectivity 3, it reached median max
+offset `0.180 m`, p95 max offset `0.443 m`, worst-case max offset `0.982 m`,
+and `100%` under 1 m.
+
+```json
+{
+  "solver": "visibility_branching",
+  "iterations": 45,
+  "beam_width": 32,
+  "optimizer_seeds": 16,
+  "radio_radius_m": 8.0,
+  "missing_margin_m": 0.25,
+  "missing_weight": 8.0,
+  "missing_sigma_m": 0.75,
+  "graph_upper_weight": 0.35,
+  "graph_upper_factor": 1.0,
+  "graph_upper_slack_m": 0.75,
+  "graph_upper_sigma_m": 1.0,
+  "final_visibility_weight": 1.0,
+  "constrained_polish": true,
+  "constrained_iterations": 55,
+  "constrained_known_weight": 1.0
+}
+```
+
+The best fast alternate is `visibility_sdp_tuned`. It had median max offset
+`0.181 m`, p95 max offset `0.483 m`, worst-case max offset `1.057 m`, and
+median runtime `1.66 s` versus `5.10 s` for tuned branching on the same run.
+
+```json
+{
+  "solver": "visibility_sdp",
+  "iterations": 45,
+  "radio_radius_m": 8.2,
+  "missing_margin_m": 0.25,
+  "known_weight": 1.0,
+  "missing_weight": 1.0,
+  "missing_sigma_m": 0.5,
+  "graph_upper_weight": 0.05,
+  "graph_upper_factor": 1.1,
+  "graph_upper_slack_m": 1.5,
+  "graph_upper_sigma_m": 1.0,
+  "constrained_polish": true,
+  "constrained_iterations": 55,
+  "sdp_solver": "SCS",
+  "sdp_max_iters": 3000,
+  "sdp_eps": 0.0002
+}
+```
+
 ## Useful Legacy Entry Points
 
 ```powershell
@@ -79,6 +143,6 @@ For PPO curriculum work on Windows, prefer `--solve-threads 1` on strong evaluat
 ## Current Notes
 
 - Sparse anchor edges are generated from noisy known ranges; fair layouts should enforce at least three known connections per anchor.
-- Graph-shortest scaffold distances remain the most robust non-ML baseline in the grid tail at the moment.
-- The weighted PPO model is useful for experimentation, but the last comparison still had graph-shortest ahead or tied on the most difficult grid cases.
-- Checkpoints and generated figures stay out of git. Put durable conclusions in `docs/` and regenerable artifacts in `outputs/`.
+- Graph-shortest scaffold remains a useful cheap baseline, but the tuned visibility branching solver is the current best checked-in result.
+- The weighted PPO model is useful for experimentation, but it is not the current top documented solver.
+- Checkpoints and large generated outputs stay out of git. Put durable conclusions and compact documentation figures in `docs/`, and regenerable bulk artifacts in `outputs/`.
