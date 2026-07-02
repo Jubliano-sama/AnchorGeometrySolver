@@ -1,0 +1,74 @@
+{
+  "stage1_best": {
+    "visibility_branching": {
+      "beam_width": 32,
+      "constrained_iterations": 55,
+      "constrained_known_weight": 1.0,
+      "constrained_polish": true,
+      "final_visibility_weight": 1.0,
+      "graph_upper_factor": 1.0,
+      "graph_upper_sigma_m": 1.0,
+      "graph_upper_slack_m": 0.75,
+      "graph_upper_weight": 0.35,
+      "iterations": 45,
+      "missing_margin_m": 0.25,
+      "missing_sigma_m": 0.75,
+      "missing_weight": 4.0,
+      "optimizer_seeds": 16,
+      "radio_radius_m": 8.0
+    },
+    "visibility_sdp": {
+      "constrained_iterations": 55,
+      "constrained_polish": true,
+      "graph_upper_factor": 1.04,
+      "graph_upper_sigma_m": 1.0,
+      "graph_upper_slack_m": 1.5,
+      "graph_upper_weight": 0.05,
+      "iterations": 45,
+      "known_weight": 1.0,
+      "missing_margin_m": 0.25,
+      "missing_sigma_m": 0.5,
+      "missing_weight": 1.0,
+      "radio_radius_m": 8.2,
+      "sdp_eps": 0.0002,
+      "sdp_max_iters": 3000,
+      "sdp_solver": "SCS"
+    }
+  },
+  "stage2_best": {
+    "visibility_branching": {
+      "beam_width": 32,
+      "constrained_iterations": 55,
+      "constrained_known_weight": 1.0,
+      "constrained_polish": true,
+      "final_visibility_weight": 1.0,
+      "graph_upper_factor": 1.0,
+      "graph_upper_sigma_m": 1.0,
+      "graph_upper_slack_m": 0.75,
+      "graph_upper_weight": 0.35,
+      "iterations": 45,
+      "missing_margin_m": 0.25,
+      "missing_sigma_m": 0.75,
+      "missing_weight": 8.0,
+      "optimizer_seeds": 16,
+      "radio_radius_m": 8.0
+    },
+    "visibility_sdp": {
+      "constrained_iterations": 55,
+      "constrained_polish": true,
+      "graph_upper_factor": 1.1,
+      "graph_upper_sigma_m": 1.0,
+      "graph_upper_slack_m": 1.5,
+      "graph_upper_weight": 0.05,
+      "iterations": 45,
+      "known_weight": 1.0,
+      "missing_margin_m": 0.25,
+      "missing_sigma_m": 0.5,
+      "missing_weight": 1.0,
+      "radio_radius_m": 8.2,
+      "sdp_eps": 0.0002,
+      "sdp_max_iters": 3000,
+      "sdp_solver": "SCS"
+    }
+  }
+}

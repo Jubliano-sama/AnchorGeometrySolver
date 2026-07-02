@@ -17,6 +17,7 @@ outputs/*
 *.err
 
 *.png
+!docs/results/*.png
 *.jpg
 *.jpeg
 *.gif
