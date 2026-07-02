@@ -1,0 +1,12 @@
+[project]
+name = "smartclicker-gui"
+version = "0.1.0"
+description = "Laptop GUI for IMEC ML Clicker BLE range-data capture"
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl",
+    "bleak",
+]
+
+[tool.uv]
+package = true

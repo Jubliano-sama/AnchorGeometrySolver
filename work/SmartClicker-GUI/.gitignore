@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+Measurements/
+*.sqlite
+*.sqlite-*
+*.xlsx
+*:Zone.Identifier
+.DS_Store
+*.egg-info/
+.uv-cache/
