@@ -12,6 +12,7 @@ from anchor_geometry_solver.types import BenchmarkRow, CaseContext, MethodSpec
 ensure_legacy_paths()
 import anchor_solver_fold_rescue_experiment as exp  # noqa: E402
 import anchor_solver_ml_distance_completion as dc  # noqa: E402
+import anchor_geometry_solver.visibility as vis  # noqa: E402
 
 
 os.environ.setdefault("OMP_NUM_THREADS", "1")
@@ -27,6 +28,15 @@ def _float_param(params: dict[str, Any], key: str, default: float) -> float:
     return float(params.get(key, default))
 
 
+def _bool_param(params: dict[str, Any], key: str, default: bool = False) -> bool:
+    value = params.get(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on"}
+    return bool(value)
+
+
 def _solve_positions(context: CaseContext, method: MethodSpec, *, rng_seed: int) -> dict[str, tuple[float, float]]:
     solver = method.solver.replace("_", "-").lower()
     params = method.params
@@ -39,7 +49,7 @@ def _solve_positions(context: CaseContext, method: MethodSpec, *, rng_seed: int)
             rng_seed=rng_seed,
         )
     if solver in {"graph-shortest", "graph-shortest-scaffold", "graph"}:
-        return exp.graph_shortest_scaffold_solve(
+        positions = exp.graph_shortest_scaffold_solve(
             known_pairs,
             seed_count=_int_param(params, "seed_count", 6),
             iterations=_int_param(params, "iterations", 45),
@@ -48,6 +58,22 @@ def _solve_positions(context: CaseContext, method: MethodSpec, *, rng_seed: int)
             relative_sigma=_float_param(params, "relative_sigma", 0.30),
             scaffold_weight=_float_param(params, "scaffold_weight", 1.0),
             hop_weight_base=_float_param(params, "hop_weight_base", 1.0),
+        )
+        if not _bool_param(params, "constrained_polish", False):
+            return positions
+        return vis.visibility_constrained_solve_from_seed(
+            positions,
+            known_pairs,
+            max_iterations=_int_param(params, "constrained_iterations", _int_param(params, "iterations", 45)),
+            radio_radius_m=_float_param(params, "radio_radius_m", 8.0),
+            missing_margin_m=_float_param(params, "missing_margin_m", 0.0),
+            missing_sigma_m=_float_param(params, "missing_sigma_m", 0.75),
+            missing_weight=_float_param(params, "missing_weight", 1.0),
+            graph_upper_factor=_float_param(params, "graph_upper_factor", 1.0),
+            graph_upper_slack_m=_float_param(params, "graph_upper_slack_m", 0.75),
+            graph_upper_sigma_m=_float_param(params, "graph_upper_sigma_m", 1.0),
+            graph_upper_weight=_float_param(params, "graph_upper_weight", 0.35),
+            known_weight=_float_param(params, "constrained_known_weight", 1.0),
         )
     if solver in {"distance-only", "known-only"}:
         return exp.best_distance_only_solve(
@@ -60,6 +86,63 @@ def _solve_positions(context: CaseContext, method: MethodSpec, *, rng_seed: int)
         return dc.known_only_solution(
             known_pairs,
             max_iterations=_int_param(params, "iterations", 45),
+        )
+    if solver in {"visibility-branching", "visibility-branch", "branching-visibility"}:
+        return vis.visibility_branching_solve(
+            known_pairs,
+            beam_width=_int_param(params, "beam_width", 32),
+            optimizer_seeds=_int_param(params, "optimizer_seeds", 32),
+            iterations=_int_param(params, "iterations", 45),
+            radio_radius_m=_float_param(params, "radio_radius_m", 8.0),
+            missing_margin_m=_float_param(params, "missing_margin_m", 0.0),
+            missing_sigma_m=_float_param(params, "missing_sigma_m", 0.75),
+            missing_weight=_float_param(params, "missing_weight", 1.0),
+            graph_upper_factor=_float_param(params, "graph_upper_factor", 1.0),
+            graph_upper_slack_m=_float_param(params, "graph_upper_slack_m", 0.75),
+            graph_upper_sigma_m=_float_param(params, "graph_upper_sigma_m", 1.0),
+            graph_upper_weight=_float_param(params, "graph_upper_weight", 0.35),
+            one_link_angles=_int_param(params, "one_link_angles", 16),
+            point_refine_iterations=_int_param(params, "point_refine_iterations", 12),
+            final_visibility_weight=_float_param(params, "final_visibility_weight", 1.0),
+            constrained_polish=_bool_param(params, "constrained_polish", False),
+            constrained_iterations=_int_param(params, "constrained_iterations", _int_param(params, "iterations", 45)),
+            constrained_known_weight=_float_param(params, "constrained_known_weight", 1.0),
+        )
+    if solver in {"visibility-relaxed", "relaxed-visibility"}:
+        return vis.visibility_relaxed_solve(
+            known_pairs,
+            relax_iterations=_int_param(params, "relax_iterations", 600),
+            relax_step_size=_float_param(params, "relax_step_size", 0.025),
+            iterations=_int_param(params, "iterations", 45),
+            radio_radius_m=_float_param(params, "radio_radius_m", 8.0),
+            known_weight=_float_param(params, "known_weight", 1.0),
+            missing_weight=_float_param(params, "missing_weight", 0.3),
+            graph_upper_weight=_float_param(params, "graph_upper_weight", 0.1),
+            graph_upper_factor=_float_param(params, "graph_upper_factor", 1.0),
+            graph_upper_slack_m=_float_param(params, "graph_upper_slack_m", 0.75),
+            missing_sigma_m=_float_param(params, "missing_sigma_m", 0.75),
+            graph_upper_sigma_m=_float_param(params, "graph_upper_sigma_m", 1.0),
+            constrained_polish=_bool_param(params, "constrained_polish", False),
+            constrained_iterations=_int_param(params, "constrained_iterations", _int_param(params, "iterations", 45)),
+        )
+    if solver in {"visibility-sdp", "sdp-visibility"}:
+        return vis.visibility_sdp_solve(
+            known_pairs,
+            iterations=_int_param(params, "iterations", 45),
+            radio_radius_m=_float_param(params, "radio_radius_m", 8.0),
+            missing_margin_m=_float_param(params, "missing_margin_m", 0.0),
+            known_weight=_float_param(params, "known_weight", 1.0),
+            missing_weight=_float_param(params, "missing_weight", 0.35),
+            graph_upper_weight=_float_param(params, "graph_upper_weight", 0.15),
+            graph_upper_factor=_float_param(params, "graph_upper_factor", 1.0),
+            graph_upper_slack_m=_float_param(params, "graph_upper_slack_m", 0.75),
+            missing_sigma_m=_float_param(params, "missing_sigma_m", 0.75),
+            graph_upper_sigma_m=_float_param(params, "graph_upper_sigma_m", 1.0),
+            constrained_polish=_bool_param(params, "constrained_polish", False),
+            constrained_iterations=_int_param(params, "constrained_iterations", _int_param(params, "iterations", 45)),
+            sdp_solver=str(params.get("sdp_solver", "SCS")),
+            sdp_max_iters=_int_param(params, "sdp_max_iters", 4000),
+            sdp_eps=_float_param(params, "sdp_eps", 1e-4),
         )
     raise ValueError(f"Unknown solver {method.solver!r}")
 

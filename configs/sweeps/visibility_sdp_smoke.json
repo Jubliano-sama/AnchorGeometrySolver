@@ -1,0 +1,51 @@
+{
+  "benchmark": {
+    "name": "visibility_sdp_smoke",
+    "seed": 2026070206,
+    "cases_per_bucket": 1,
+    "device": "cpu"
+  },
+  "runner": {
+    "backend": "serial",
+    "workers": 1,
+    "fold_threshold_m": 1.65,
+    "output_dir": "outputs"
+  },
+  "layouts": [
+    {
+      "name": "grid_16_plus",
+      "bucket": "grid"
+    }
+  ],
+  "methods": [
+    {
+      "name": "visibility_sdp",
+      "solver": "visibility_sdp",
+      "params": {
+        "iterations": 25,
+        "radio_radius_m": 8.0,
+        "missing_weight": 0.35,
+        "graph_upper_weight": 0.15,
+        "constrained_polish": false,
+        "sdp_solver": "SCS",
+        "sdp_max_iters": 4000,
+        "sdp_eps": 0.0001
+      }
+    },
+    {
+      "name": "visibility_sdp_constrained",
+      "solver": "visibility_sdp",
+      "params": {
+        "iterations": 25,
+        "radio_radius_m": 8.0,
+        "missing_weight": 0.35,
+        "graph_upper_weight": 0.15,
+        "constrained_polish": true,
+        "constrained_iterations": 35,
+        "sdp_solver": "SCS",
+        "sdp_max_iters": 4000,
+        "sdp_eps": 0.0001
+      }
+    }
+  ]
+}

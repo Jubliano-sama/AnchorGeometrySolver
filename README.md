@@ -51,6 +51,14 @@ outputs/<benchmark-name>/
 
 Use `thread` or `process` backends for expensive sweeps. The nonlinear solver still sets BLAS thread counts to one in worker processes so case-level parallelism does not fight with library-level threading.
 
+Visibility-aware methods now available in configs:
+
+- `visibility_branching`: beam search trilateration seed with missing-edge and graph-shortest scoring.
+- `visibility_relaxed`: lightweight relaxed visibility seed without CVXPY.
+- `visibility_sdp`: CVXPY/PSD Gram-matrix visibility seed, then nonlinear polish.
+
+Set `constrained_polish: true` on `graph_shortest`, `visibility_branching`, `visibility_relaxed`, or `visibility_sdp` to use the optional final hinge solver. Missing edges use `max(0, radio_radius + margin - distance)` and graph-shortest bounds use `max(0, distance - upper_bound)`.
+
 ## Useful Legacy Entry Points
 
 ```powershell

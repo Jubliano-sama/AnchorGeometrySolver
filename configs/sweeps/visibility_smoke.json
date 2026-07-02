@@ -1,0 +1,99 @@
+{
+  "benchmark": {
+    "name": "visibility_smoke",
+    "seed": 2026070205,
+    "cases_per_bucket": 1,
+    "device": "cpu"
+  },
+  "runner": {
+    "backend": "serial",
+    "workers": 1,
+    "fold_threshold_m": 1.65,
+    "output_dir": "outputs"
+  },
+  "layouts": [
+    {
+      "name": "grid_16_plus",
+      "bucket": "grid"
+    }
+  ],
+  "methods": [
+    {
+      "name": "graph_shortest",
+      "solver": "graph_shortest",
+      "params": {
+        "seed_count": 2,
+        "iterations": 25,
+        "max_hops": 2,
+        "relative_sigma": 0.3,
+        "scaffold_weight": 1.0,
+        "hop_weight_base": 1.0,
+        "constrained_polish": false
+      }
+    },
+    {
+      "name": "graph_shortest_constrained",
+      "solver": "graph_shortest",
+      "params": {
+        "seed_count": 2,
+        "iterations": 25,
+        "max_hops": 2,
+        "relative_sigma": 0.3,
+        "scaffold_weight": 1.0,
+        "hop_weight_base": 1.0,
+        "constrained_polish": true,
+        "constrained_iterations": 35,
+        "missing_weight": 4.0,
+        "graph_upper_weight": 0.35
+      }
+    },
+    {
+      "name": "visibility_branching",
+      "solver": "visibility_branching",
+      "params": {
+        "iterations": 25,
+        "beam_width": 16,
+        "optimizer_seeds": 8,
+        "missing_weight": 4.0,
+        "graph_upper_weight": 0.35,
+        "constrained_polish": false
+      }
+    },
+    {
+      "name": "visibility_branching_constrained",
+      "solver": "visibility_branching",
+      "params": {
+        "iterations": 25,
+        "beam_width": 16,
+        "optimizer_seeds": 8,
+        "missing_weight": 4.0,
+        "graph_upper_weight": 0.35,
+        "constrained_polish": true,
+        "constrained_iterations": 35
+      }
+    },
+    {
+      "name": "visibility_relaxed",
+      "solver": "visibility_relaxed",
+      "params": {
+        "iterations": 25,
+        "relax_iterations": 160,
+        "missing_weight": 0.3,
+        "graph_upper_weight": 0.1,
+        "constrained_polish": false
+      }
+    },
+    {
+      "name": "visibility_relaxed_constrained",
+      "solver": "visibility_relaxed",
+      "params": {
+        "iterations": 25,
+        "relax_iterations": 160,
+        "missing_weight": 0.3,
+        "graph_upper_weight": 0.1,
+        "constrained_polish": true,
+        "constrained_iterations": 35
+      }
+    }
+  ]
+}
