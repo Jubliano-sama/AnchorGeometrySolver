@@ -11,3 +11,7 @@ outputs belong in the ignored `outputs/` directory.
   graph-shortest baseline on 80 matched cases.
 - `anchor_solver_curriculum_final_vs_graph_shortest_80cases_20260628_paired.csv`:
   paired-case comparison details for the same 80-case evaluation.
+- `new_algorithms_simple_benchmark_summary.csv` and
+  `new_algorithms_simple_benchmark_detail.csv`: fixed-constant smoke benchmark
+  comparing graph scaffold, visibility branching, and visibility SDP on 12
+  matched 16-24 anchor cases.

@@ -1,0 +1,101 @@
+{
+  "benchmark": {
+    "name": "new_algorithms_simple_benchmark",
+    "seed": 2026070210,
+    "cases_per_bucket": 4,
+    "device": "cpu"
+  },
+  "runner": {
+    "backend": "serial",
+    "workers": 1,
+    "fold_threshold_m": 1.65,
+    "output_dir": "outputs"
+  },
+  "layouts": [
+    {
+      "name": "random_16_24",
+      "bucket": "Random 16-24",
+      "family": "random",
+      "shape": "rectangle",
+      "cases": 4,
+      "count_range": [16, 24],
+      "width_range_m": [16.0, 28.0],
+      "height_range_m": [16.0, 28.0],
+      "min_vertex_connectivity": 1
+    },
+    {
+      "name": "grid_16_24",
+      "bucket": "Grid 16-24",
+      "family": "grid",
+      "shape": "rectangle",
+      "cases": 4,
+      "count_range": [16, 24],
+      "width_range_m": [18.0, 32.0],
+      "height_range_m": [18.0, 32.0],
+      "min_vertex_connectivity": 1
+    },
+    {
+      "name": "office_16_24",
+      "bucket": "Office 16-24",
+      "family": "grid",
+      "shapes": ["corridor", "l_shape", "t_shape", "u_shape", "hollow_square", "rooms"],
+      "cases": 4,
+      "count_range": [16, 24],
+      "width_range_m": [18.0, 34.0],
+      "height_range_m": [18.0, 34.0],
+      "min_vertex_connectivity": 1
+    }
+  ],
+  "methods": [
+    {
+      "name": "graph_scaffold_base",
+      "solver": "graph_shortest",
+      "params": {
+        "seed_count": 6,
+        "iterations": 45,
+        "max_hops": 2,
+        "relative_sigma": 0.30,
+        "scaffold_weight": 2.0,
+        "hop_weight_base": 1.4,
+        "constrained_polish": false
+      }
+    },
+    {
+      "name": "visibility_branching",
+      "solver": "visibility_branching",
+      "params": {
+        "iterations": 45,
+        "beam_width": 32,
+        "optimizer_seeds": 16,
+        "radio_radius_m": 8.0,
+        "missing_weight": 4.0,
+        "missing_sigma_m": 0.75,
+        "graph_upper_weight": 0.35,
+        "graph_upper_sigma_m": 1.0,
+        "graph_upper_slack_m": 0.75,
+        "constrained_polish": true,
+        "constrained_iterations": 55,
+        "constrained_known_weight": 1.0
+      }
+    },
+    {
+      "name": "visibility_sdp",
+      "solver": "visibility_sdp",
+      "params": {
+        "iterations": 45,
+        "radio_radius_m": 8.0,
+        "known_weight": 1.0,
+        "missing_weight": 0.35,
+        "missing_sigma_m": 0.75,
+        "graph_upper_weight": 0.15,
+        "graph_upper_sigma_m": 1.0,
+        "graph_upper_slack_m": 0.75,
+        "constrained_polish": true,
+        "constrained_iterations": 55,
+        "sdp_solver": "SCS",
+        "sdp_max_iters": 3000,
+        "sdp_eps": 0.0002
+      }
+    }
+  ]
+}
